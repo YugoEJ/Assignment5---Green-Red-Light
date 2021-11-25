@@ -5,7 +5,6 @@ using UnityEngine;
 public class DollHeadMovement : MonoBehaviour
 {
     public Vector3 rotationAngle = new Vector3(0f, 1f, 0f);
-    //public Rigidbody rb;
 
     private bool isScanning = true;
 
@@ -15,6 +14,8 @@ public class DollHeadMovement : MonoBehaviour
 
     void Start()
     {
+        float scanningTime = (float)Random.Range(4, 6);
+        float nonScanningTime = (float)Random.Range(1, 4);
         StartCoroutine(RotateObject(180, rotationAngle, 0.25f));
     }
 
@@ -25,6 +26,11 @@ public class DollHeadMovement : MonoBehaviour
 
         while (true)
         {
+            if (isScanning)
+            {
+                playScanSound();
+            }
+
             // save starting rotation position
             Quaternion startRotation = transform.rotation;
 
@@ -33,6 +39,14 @@ public class DollHeadMovement : MonoBehaviour
             // rotate until reaching angle
             while (deltaAngle < angle)
             {
+
+                if (!isScanning && movementDetected())
+                {
+                    // youLose();
+                    playGunshotSound();
+                    // yield break;
+                }
+
                 deltaAngle += rotationSpeed * Time.deltaTime;
                 deltaAngle = Mathf.Min(deltaAngle, angle);
 
@@ -44,9 +58,8 @@ public class DollHeadMovement : MonoBehaviour
             // delay here
             if (isScanning)
             {
-                playScanSound();
 
-                if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.D))
+                if (movementDetected())
                 {
                     // youLose();
                     playGunshotSound();
@@ -54,7 +67,8 @@ public class DollHeadMovement : MonoBehaviour
 
                 }
 
-                yield return new WaitForSeconds((float)Random.Range(4, 6));
+                yield return new WaitForSeconds((float)Random.Range(1, 2));
+                isScanning = !isScanning;
 
                 // greenLightSound.Play();
             }
@@ -62,13 +76,12 @@ public class DollHeadMovement : MonoBehaviour
             {
                 // redLightSound.Play();
 
+                yield return new WaitForSeconds((float)Random.Range(2, 5));
+                isScanning = !isScanning;
 
-
-                yield return new WaitForSeconds((float)Random.Range(1, 4));
             }
 
 
-            isScanning = !isScanning;
         }
     }
 
@@ -80,5 +93,18 @@ public class DollHeadMovement : MonoBehaviour
     public void playGunshotSound()
     {
         Gunshot.Play();
+    }
+
+    public bool movementDetected()
+    {
+        bool playerMoved = false;
+
+        if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.D))
+        {
+            playerMoved = true;
+
+        }
+
+        return playerMoved;
     }
 }
