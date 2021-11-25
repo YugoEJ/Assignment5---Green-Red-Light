@@ -5,10 +5,17 @@ using UnityEngine;
 public class DollHeadMovement : MonoBehaviour
 {
     public Vector3 rotationAngle = new Vector3(0f, 1f, 0f);
+    //public Rigidbody rb;
+
+    private bool isScanning = true;
+
+    public AudioSource Scan;
+    public AudioSource Gunshot;
+
 
     void Start()
     {
-        StartCoroutine(RotateObject(180, rotationAngle, 0.5f));
+        StartCoroutine(RotateObject(180, rotationAngle, 0.25f));
     }
 
     IEnumerator RotateObject(float angle, Vector3 axis, float inTime)
@@ -35,7 +42,37 @@ public class DollHeadMovement : MonoBehaviour
             }
 
             // delay here
-            yield return new WaitForSeconds((float)Random.Range(1, 4));
+            if (isScanning)
+            {
+                playScanSound();
+            }
+
+            if (isScanning && GameObject.FindGameObjectWithTag("Player").transform.hasChanged == true)
+            {
+                playGunshotSound();
+            }
+
+            if (isScanning)
+            {
+                // greenLightSound.Play();
+                yield return new WaitForSeconds((float)Random.Range(4, 6));
+            } else
+            {
+                // redLightSound.Play();
+                yield return new WaitForSeconds((float)Random.Range(1, 4));
+            }
+
+            isScanning = !isScanning;
         }
+    }
+
+    public void playScanSound()
+    {
+        Scan.Play();
+    }
+
+    public void playGunshotSound()
+    {
+        Gunshot.Play();
     }
 }
