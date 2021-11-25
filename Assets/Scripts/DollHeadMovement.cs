@@ -45,22 +45,28 @@ public class DollHeadMovement : MonoBehaviour
             if (isScanning)
             {
                 playScanSound();
-            }
 
-            if (isScanning && GameObject.FindGameObjectWithTag("Player").transform.hasChanged == true)
-            {
-                playGunshotSound();
-            }
+                if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.D))
+                {
+                    // youLose();
+                    playGunshotSound();
+                    // yield break;
 
-            if (isScanning)
-            {
-                // greenLightSound.Play();
+                }
+
                 yield return new WaitForSeconds((float)Random.Range(4, 6));
-            } else
+
+                // greenLightSound.Play();
+            }
+            else
             {
                 // redLightSound.Play();
+
+
+
                 yield return new WaitForSeconds((float)Random.Range(1, 4));
             }
+
 
             isScanning = !isScanning;
         }
