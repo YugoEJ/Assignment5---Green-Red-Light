@@ -1,22 +1,53 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class DollHeadMovement : MonoBehaviour
 {
+    public GameObject playerCam;
+    public GameObject youLoseText;
+    public GameObject youWinText;
+
+    public AudioSource scanSound;
+    public AudioSource gunshotSound;
+
+    public Text countdownText;
+
+    float currentTime = 0f;
+    float startingTime = 20f;
+
     public Vector3 rotationAngle = new Vector3(0f, 1f, 0f);
 
     private bool isScanning = true;
 
-    public AudioSource Scan;
-    public AudioSource Gunshot;
-
-
     void Start()
     {
+        currentTime = startingTime;
+        youLoseText.SetActive(false);
         float scanningTime = (float)Random.Range(4, 6);
         float nonScanningTime = (float)Random.Range(1, 4);
         StartCoroutine(RotateObject(180, rotationAngle, 0.25f));
+    }
+
+    void Update()
+    {
+        currentTime -= 1f * Time.deltaTime;
+
+        if (currentTime > 9)
+        {
+            countdownText.text = "00:" + currentTime.ToString("0");
+        }
+        else
+        {
+            countdownText.text = "00:0" + currentTime.ToString("0");
+        }
+
+        if (currentTime <= 0)
+        {
+            currentTime = 0;
+            playerDied();
+        }
     }
 
     IEnumerator RotateObject(float angle, Vector3 axis, float inTime)
@@ -42,9 +73,8 @@ public class DollHeadMovement : MonoBehaviour
 
                 if (!isScanning && movementDetected())
                 {
-                    // youLose();
-                    playGunshotSound();
-                    // yield break;
+                    playerDied();
+                    yield break;
                 }
 
                 deltaAngle += rotationSpeed * Time.deltaTime;
@@ -61,10 +91,8 @@ public class DollHeadMovement : MonoBehaviour
 
                 if (movementDetected())
                 {
-                    // youLose();
-                    playGunshotSound();
-                    // yield break;
-
+                    playerDied();
+                    yield break;
                 }
 
                 yield return new WaitForSeconds((float)Random.Range(1, 2));
@@ -78,21 +106,18 @@ public class DollHeadMovement : MonoBehaviour
 
                 yield return new WaitForSeconds((float)Random.Range(2, 5));
                 isScanning = !isScanning;
-
             }
-
-
         }
     }
 
     public void playScanSound()
     {
-        Scan.Play();
+        scanSound.Play();
     }
 
     public void playGunshotSound()
     {
-        Gunshot.Play();
+        gunshotSound.Play();
     }
 
     public bool movementDetected()
@@ -106,5 +131,13 @@ public class DollHeadMovement : MonoBehaviour
         }
 
         return playerMoved;
+    }
+
+    public void playerDied()
+    {
+        playGunshotSound();
+        scanSound.Stop();
+        playerCam.SetActive(false);
+        youLoseText.SetActive(true);
     }
 }
