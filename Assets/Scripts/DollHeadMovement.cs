@@ -12,10 +12,12 @@ public class DollHeadMovement : MonoBehaviour
     public AudioSource scanSound;
     public AudioSource gunshotSound;
 
+    public Collision finishLine;
+
     public Text countdownText;
 
     float currentTime = 0f;
-    float startingTime = 20f;
+    float startingTime = 2f;
 
     public Vector3 rotationAngle = new Vector3(0f, 1f, 0f);
 
@@ -25,6 +27,7 @@ public class DollHeadMovement : MonoBehaviour
     {
         currentTime = startingTime;
         youLoseText.SetActive(false);
+        youWinText.SetActive(false);
         float scanningTime = (float)Random.Range(4, 6);
         float nonScanningTime = (float)Random.Range(1, 4);
         StartCoroutine(RotateObject(180, rotationAngle, 0.25f));
