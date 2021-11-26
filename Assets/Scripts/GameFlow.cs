@@ -2,17 +2,20 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
-public class DollHeadMovement : MonoBehaviour
+public class GameFlow : MonoBehaviour
 {
+    Scene scene;
+
     public GameObject playerCam;
     public GameObject youLoseText;
     public GameObject youWinText;
 
-    //public AudioSource scanSound;
     public AudioSource gunshotSound;
     public AudioSource greenLightSound;
     public AudioSource redLightSound;
+    public AudioSource defeatSound;
 
     private AudioSource[] allAudioSources;
 
@@ -21,7 +24,7 @@ public class DollHeadMovement : MonoBehaviour
     public Text countdownText;
 
     float currentTime = 0f;
-    float startingTime = 3f;
+    float startingTime = 20f;
 
     public Vector3 rotationAngle = new Vector3(0f, 1f, 0f);
 
@@ -30,16 +33,26 @@ public class DollHeadMovement : MonoBehaviour
 
     void Start()
     {
+        scene = SceneManager.GetActiveScene(); 
+
         currentTime = startingTime;
         youLoseText.SetActive(false);
         youWinText.SetActive(false);
+
         float scanningTime = (float)Random.Range(4, 6);
         float nonScanningTime = (float)Random.Range(1, 4);
+
         StartCoroutine(RotateObject(180, rotationAngle, 0.25f));
     }
 
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            stopAudio();
+            SceneManager.LoadScene(scene.name);
+        }
+
         if (skipFirstSounds)
         {
             stopAudio();
@@ -59,8 +72,8 @@ public class DollHeadMovement : MonoBehaviour
         if (currentTime <= 0)
         {
             currentTime = 0;
-            stopAudio();
-            playerDied();
+            greenLightSound.Stop();
+            redLightSound.Stop();
         }
     }
 
@@ -155,6 +168,11 @@ public class DollHeadMovement : MonoBehaviour
         redLightSound.Play();
     }
 
+    public void playDefeatSound()
+    {
+        defeatSound.Play();
+    }
+
     public bool movementDetected()
     {
         bool playerMoved = false;
@@ -169,15 +187,9 @@ public class DollHeadMovement : MonoBehaviour
 
     public void playerDied()
     {
+        playDefeatSound();
         playGunshotSound();
         playerCam.SetActive(false);
         youLoseText.SetActive(true);
-    }
-
-    public void playerWins()
-    {
-        stopAudio();
-        playerCam.SetActive(false);
-        youWinText.SetActive(true);
     }
 }
