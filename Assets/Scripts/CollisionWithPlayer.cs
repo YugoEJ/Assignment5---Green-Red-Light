@@ -2,14 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerBodyCollision : MonoBehaviour
+public class CollisionWithPlayer : MonoBehaviour
 {
     public GameObject playerCam;
     public GameObject youWinText;
 
-    public void OnCollisionEnter(Collision collision)
+    private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.name == "Finishing Line")
+        if (collision.gameObject.name == "PlayerFace")
         {
             playerCam.SetActive(false);
             youWinText.SetActive(true);

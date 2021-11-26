@@ -9,19 +9,24 @@ public class DollHeadMovement : MonoBehaviour
     public GameObject youLoseText;
     public GameObject youWinText;
 
-    public AudioSource scanSound;
+    //public AudioSource scanSound;
     public AudioSource gunshotSound;
+    public AudioSource greenLightSound;
+    public AudioSource redLightSound;
+
+    private AudioSource[] allAudioSources;
 
     public Collision finishLine;
 
     public Text countdownText;
 
     float currentTime = 0f;
-    float startingTime = 2f;
+    float startingTime = 3f;
 
     public Vector3 rotationAngle = new Vector3(0f, 1f, 0f);
 
     private bool isScanning = true;
+    private bool skipFirstSounds = true;
 
     void Start()
     {
@@ -35,6 +40,11 @@ public class DollHeadMovement : MonoBehaviour
 
     void Update()
     {
+        if (skipFirstSounds)
+        {
+            stopAudio();
+            skipFirstSounds = false;
+        }
         currentTime -= 1f * Time.deltaTime;
 
         if (currentTime > 9)
@@ -49,6 +59,7 @@ public class DollHeadMovement : MonoBehaviour
         if (currentTime <= 0)
         {
             currentTime = 0;
+            stopAudio();
             playerDied();
         }
     }
@@ -62,7 +73,8 @@ public class DollHeadMovement : MonoBehaviour
         {
             if (isScanning)
             {
-                playScanSound();
+                playRedLightSound();
+                //playScanSound();
             }
 
             // save starting rotation position
@@ -99,6 +111,7 @@ public class DollHeadMovement : MonoBehaviour
                 }
 
                 yield return new WaitForSeconds((float)Random.Range(1, 2));
+                playGreenLightSound();
                 isScanning = !isScanning;
 
                 // greenLightSound.Play();
@@ -113,14 +126,33 @@ public class DollHeadMovement : MonoBehaviour
         }
     }
 
+    public void stopAudio()
+    {
+        allAudioSources = FindObjectsOfType(typeof(AudioSource)) as AudioSource[];
+        foreach (AudioSource audioS in allAudioSources)
+        {
+            audioS.Stop();
+        }
+    }
+
     public void playScanSound()
     {
-        scanSound.Play();
+        //scanSound.Play();
     }
 
     public void playGunshotSound()
     {
         gunshotSound.Play();
+    }
+
+    public void playGreenLightSound()
+    {
+        greenLightSound.Play();
+    }
+
+    public void playRedLightSound()
+    {
+        redLightSound.Play();
     }
 
     public bool movementDetected()
@@ -130,7 +162,6 @@ public class DollHeadMovement : MonoBehaviour
         if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.D))
         {
             playerMoved = true;
-
         }
 
         return playerMoved;
@@ -139,8 +170,14 @@ public class DollHeadMovement : MonoBehaviour
     public void playerDied()
     {
         playGunshotSound();
-        scanSound.Stop();
         playerCam.SetActive(false);
         youLoseText.SetActive(true);
+    }
+
+    public void playerWins()
+    {
+        stopAudio();
+        playerCam.SetActive(false);
+        youWinText.SetActive(true);
     }
 }
