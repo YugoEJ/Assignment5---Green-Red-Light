@@ -31,6 +31,14 @@ public class GameFlow : MonoBehaviour
     private bool isScanning = true;
     private bool skipFirstSounds = true;
 
+    CursorLockMode lockMode;
+
+    void Awake()
+    {
+        lockMode = CursorLockMode.Locked;
+        Cursor.lockState = lockMode;
+    }
+
     void Start()
     {
         scene = SceneManager.GetActiveScene(); 
