@@ -16,6 +16,7 @@ public class GameFlow : MonoBehaviour
     public AudioSource greenLightSound;
     public AudioSource redLightSound;
     public AudioSource defeatSound;
+    public AudioSource backgroundMusic;
 
     private AudioSource[] allAudioSources;
 
@@ -24,7 +25,7 @@ public class GameFlow : MonoBehaviour
     public Text countdownText;
 
     float currentTime = 0f;
-    float startingTime = 20f;
+    float startingTime = 32f;
 
     public Vector3 rotationAngle = new Vector3(0f, 1f, 0f);
 
@@ -66,6 +67,7 @@ public class GameFlow : MonoBehaviour
             stopAudio();
             skipFirstSounds = false;
         }
+
         currentTime -= 1f * Time.deltaTime;
 
         if (currentTime > 9)
@@ -77,11 +79,17 @@ public class GameFlow : MonoBehaviour
             countdownText.text = "00:0" + currentTime.ToString("0");
         }
 
-        if (currentTime <= 0)
+        if (currentTime <= 0 && CollisionWithPlayer.playerWins == false)
         {
             currentTime = 0;
-            greenLightSound.Stop();
+            stopAudio();
+            playerDied();
+        }
+
+        if (CollisionWithPlayer.playerWins == true)
+        {
             redLightSound.Stop();
+            greenLightSound.Stop();
         }
     }
 
@@ -152,7 +160,13 @@ public class GameFlow : MonoBehaviour
         allAudioSources = FindObjectsOfType(typeof(AudioSource)) as AudioSource[];
         foreach (AudioSource audioS in allAudioSources)
         {
-            audioS.Stop();
+            if (audioS == backgroundMusic)
+            {
+
+            } else
+            {
+                audioS.Stop();
+            }
         }
     }
 
@@ -181,6 +195,11 @@ public class GameFlow : MonoBehaviour
         defeatSound.Play();
     }
 
+    public void playBGM()
+    {
+        backgroundMusic.Play();
+    }
+
     public bool movementDetected()
     {
         bool playerMoved = false;
@@ -195,6 +214,7 @@ public class GameFlow : MonoBehaviour
 
     public void playerDied()
     {
+        backgroundMusic.Stop();
         playDefeatSound();
         playGunshotSound();
         playerCam.SetActive(false);
