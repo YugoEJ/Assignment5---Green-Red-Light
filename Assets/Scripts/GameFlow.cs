@@ -103,7 +103,6 @@ public class GameFlow : MonoBehaviour
             if (isScanning)
             {
                 playRedLightSound();
-                //playScanSound();
             }
 
             // save starting rotation position
@@ -129,7 +128,6 @@ public class GameFlow : MonoBehaviour
                 yield return null;
             }
 
-            // delay here
             if (isScanning)
             {
 
@@ -142,13 +140,9 @@ public class GameFlow : MonoBehaviour
                 yield return new WaitForSeconds((float)Random.Range(1, 2));
                 playGreenLightSound();
                 isScanning = !isScanning;
-
-                // greenLightSound.Play();
             }
             else
             {
-                // redLightSound.Play();
-
                 yield return new WaitForSeconds((float)Random.Range(2, 5));
                 isScanning = !isScanning;
             }
@@ -168,11 +162,6 @@ public class GameFlow : MonoBehaviour
                 audioS.Stop();
             }
         }
-    }
-
-    public void playScanSound()
-    {
-        //scanSound.Play();
     }
 
     public void playGunshotSound()

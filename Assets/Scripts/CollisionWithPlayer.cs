@@ -9,6 +9,7 @@ public class CollisionWithPlayer : MonoBehaviour
 
     public AudioSource victorySound;
 
+
     public static bool playerWins = false;
 
     private void OnCollisionEnter(Collision collision)
